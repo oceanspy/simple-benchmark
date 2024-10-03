@@ -44,11 +44,12 @@ func BenchmarkBashCmd(bashCmd string, iterations int) BenchmarkResult {
 			fmt.Print(Reset)
 			os.Exit(1)
 		}
+		iterationDuration := time.Since(iterationStart)
+
 		fmt.Printf("¤")
 		if i+1 > 1 && (i+1)%30 == 0 {
 			fmt.Println()
 		}
-		iterationDuration := time.Since(iterationStart)
 
 		if iterationDuration < benchmarkResult.MinDuration || benchmarkResult.MinDuration == 0 {
 			benchmarkResult.MinDuration = iterationDuration
