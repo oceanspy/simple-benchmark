@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -17,6 +18,8 @@ var Magenta = "\033[35m"
 var Cyan = "\033[36m"
 var Gray = "\033[37m"
 var White = "\033[97m"
+
+var forbiddenCmd = []string{"rm", "mv", "cp", "dd", "rmdir", "touch", "ln", "chmod", "chown"}
 
 type BenchmarkResult struct {
 	Duration    time.Duration
@@ -66,6 +69,20 @@ func BenchmarkBashCmd(bashCmd string, iterations int) BenchmarkResult {
 	return benchmarkResult
 }
 
+func ContainsForbiddenCmd(cmd string) bool {
+	splitCmd := strings.Split(cmd, " ")
+
+	for _, forbidden := range forbiddenCmd {
+		for _, cmd := range splitCmd {
+			if cmd == forbidden {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Print(Red)
@@ -75,6 +92,21 @@ func main() {
 	}
 
 	bashCmd := os.Args[1]
+
+	forceCmd := false
+	if len(os.Args) == 3 {
+		if os.Args[2] == "force" {
+			forceCmd = true
+		}
+	}
+
+	if ContainsForbiddenCmd(bashCmd) && !forceCmd {
+		fmt.Print(Red)
+		fmt.Println("An harmful command has been detected in the bash command")
+		fmt.Print(Reset)
+		fmt.Println("Use 'simple-benchmark <bash command> force' to force the execution")
+		os.Exit(0)
+	}
 
 	iterations := []int{1, 10, 100, 1000, 10000}
 
