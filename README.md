@@ -22,5 +22,5 @@ simple-benchmark "<bash command>"
 git clone https://github.com/oceanspy/simple-benchmark.git
 cd simple-benchmark
 go build -o simple-benchmark simple-benchmark.go
-ln -s $(pwd)/simple-benchmark /usr/local/bin/simple-benchmark
+sudo ln -s {your_folder}/simple-benchmark/simple-benchmark /usr/local/bin/simple-benchmark
 ```
